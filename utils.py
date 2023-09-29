@@ -109,56 +109,6 @@ class TicTacToe:
     def terminal(self):
         return self.winner() != None or len(self.actions()) == 0
 
-    def minimax(self, board, alpha, beta, maximizing):
-        if self.x_is_human:
-            if board.terminal():
-                return board.utility(2)
-
-            if maximizing:
-                value = -np.inf
-                for action in board.actions():
-                    value = max(
-                        value, self.minimax(board.result(action), alpha, beta, False)
-                    )
-                    alpha = max(alpha, value)
-                    if beta <= alpha:
-                        break
-                return value
-            else:
-                value = np.inf
-                for action in board.actions():
-                    value = min(
-                        value, self.minimax(board.result(action), alpha, beta, True)
-                    )
-                    beta = min(beta, value)
-                    if beta <= alpha:
-                        break
-                return value
-        else:
-            if board.terminal():
-                return board.utility(1)
-
-            if maximizing:
-                value = -np.inf
-                for action in board.actions():
-                    value = max(
-                        value, self.minimax(board.result(action), alpha, beta, False)
-                    )
-                    alpha = max(alpha, value)
-                    if beta <= alpha:
-                        break
-                return value
-            else:
-                value = np.inf
-                for action in board.actions():
-                    value = min(
-                        value, self.minimax(board.result(action), alpha, beta, True)
-                    )
-                    beta = min(beta, value)
-                    if beta <= alpha:
-                        break
-                return value
-
     def utility(self, player):
         if self.winner() == player:
             return 1
@@ -168,16 +118,7 @@ class TicTacToe:
             return 0
 
     def best_action(self):
-        value = -np.inf
-        alpha = -np.inf
-        beta = np.inf
-        best_action = None
-        for action in self.actions():
-            move_value = self.minimax(self.result(action), alpha, beta, False)
-            if move_value > value:
-                value = move_value
-                best_action = action
-        return best_action
+        pass
 
     def show_winner(self):
         winner = self.winner()
