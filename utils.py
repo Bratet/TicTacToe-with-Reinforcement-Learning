@@ -133,3 +133,8 @@ class TicTacToe:
 
     def play(self):
         self.create_board()
+
+    def reset(self):
+        self.board = np.zeros((3, 3))
+        self.game_over = False
+        self.x_is_human = random.choice([True, False])

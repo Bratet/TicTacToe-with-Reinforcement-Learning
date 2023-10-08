@@ -10,7 +10,6 @@ class TicTacToeMinimax(TicTacToe):
         if self.x_is_human:
             if board.terminal():
                 return board.utility(2)
-
             if maximizing:
                 value = -np.inf
                 for action in board.actions():
