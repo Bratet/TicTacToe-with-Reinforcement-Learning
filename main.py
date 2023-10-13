@@ -1,9 +1,21 @@
-from minimax import TicTacToeMinimax
-from mdp import TicTacToeMDP
-from mc import MontoCarlo
+from models import MDP, MonteCarlo, TemporalDifference
 
 if __name__ == "__main__":
-    # game = TicTacToeMDP()
-    # game = TicTacToeMinimax()
-    game = MontoCarlo()
+    print("Choose an algorithm:")
+    print("1. MDP")
+    print("2. Monte Carlo")
+    print("3. Temporal Difference")
+
+    choice = int(input("Enter your choice: "))
+
+    if choice == 1:
+        game = MDP()
+    elif choice == 2:
+        game = MonteCarlo()
+    elif choice == 3:
+        game = TemporalDifference()
+    else:
+        print("Invalid choice. Exiting...")
+        exit()
+
     game.play()

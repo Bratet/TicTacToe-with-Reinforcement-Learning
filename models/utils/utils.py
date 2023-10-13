@@ -9,19 +9,19 @@ class TicTacToe:
     PLAYER_X = 1
     PLAYER_O = 2
 
-    def __init__(self):
-        self.board = np.zeros((3, 3))
+    def __init__(self, state=None):
+        if state:
+            self.board = np.array(state)
+        else:
+            self.board = np.zeros((3, 3))
         self.game_over = False
         self.x_is_human = random.choice([True, False])
-
-    def play(self):
-        self.create_board()
 
     def create_board(self):
         root = tk.Tk()
         root.title("Tic Tac Toe")
         root.resizable(0, 0)
-        root.configure(background='black')
+        root.configure(background='white')
 
         self.buttons = [
             [
@@ -42,6 +42,9 @@ class TicTacToe:
 
         if not self.x_is_human:
             self.computer_move()
+
+        self.reset_button = tk.Button(root, text="Reset", command=self.reset_game_gui)
+        self.reset_button.grid(row=3, column=0, columnspan=3)
 
         root.mainloop()
 
@@ -64,9 +67,17 @@ class TicTacToe:
             self.buttons[row][col].configure(
                 text=("X" if player == self.PLAYER_X else "O"), state="disabled"
             )
-            if self.terminal():
+            if self.terminal(self.board):
                 self.show_winner()
                 self.game_over = True
+
+    def reset_game_gui(self):
+        self.reset_game()
+        for i in range(3):
+            for j in range(3):
+                self.buttons[i][j].configure(text="", state="normal")
+        if not self.x_is_human:
+            self.computer_move()
 
     def computer_move(self):
         action = self.best_action()
@@ -77,51 +88,29 @@ class TicTacToe:
                 self.PLAYER_X if not self.x_is_human else self.PLAYER_O,
             )
 
-    def player(self):
-        return (
-            self.PLAYER_X
-            if np.count_nonzero(self.board == self.PLAYER_X)
-            == np.count_nonzero(self.board == self.PLAYER_O)
-            else self.PLAYER_O
-        )
+    def possible_actions(self, board):
+        return [(i, j) for i in range(3) for j in range(3) if board[i][j] == 0]
 
-    def actions(self):
-        return [(i, j) for i in range(3) for j in range(3) if self.board[i][j] == 0]
-
-    def result(self, action):
-        new_board = TicTacToe()
-        new_board.board = np.copy(self.board)
-        new_board.board[action[0]][action[1]] = self.player()
-        return new_board
-
-    def winner(self):
+    def winner(self, board):
         for i in range(3):
-            if self.board[i][0] == self.board[i][1] == self.board[i][2] != 0:
-                return self.board[i][0]
-            if self.board[0][i] == self.board[1][i] == self.board[2][i] != 0:
-                return self.board[0][i]
-        if self.board[0][0] == self.board[1][1] == self.board[2][2] != 0:
-            return self.board[0][0]
-        if self.board[0][2] == self.board[1][1] == self.board[2][0] != 0:
-            return self.board[0][2]
+            if board[i][0] == board[i][1] == board[i][2] != 0:
+                return board[i][0]
+            if board[0][i] == board[1][i] == board[2][i] != 0:
+                return board[0][i]
+        if board[0][0] == board[1][1] == board[2][2] != 0:
+            return board[0][0]
+        if board[0][2] == board[1][1] == board[2][0] != 0:
+            return board[0][2]
         return None
 
-    def terminal(self):
-        return self.winner() != None or len(self.actions()) == 0
-
-    def utility(self, player):
-        if self.winner() == player:
-            return 1
-        elif self.winner() == 3 - player:
-            return -1
-        else:
-            return 0
+    def terminal(self, board):
+        return self.winner(board) != None or len(self.possible_actions(board)) == 0
 
     def best_action(self):
         pass
 
     def show_winner(self):
-        winner = self.winner()
+        winner = self.winner(self.board)
         if winner == self.PLAYER_X:
             messagebox.showinfo("Game Over", "Player X wins!")
         elif winner == self.PLAYER_O:
@@ -129,12 +118,15 @@ class TicTacToe:
         else:
             messagebox.showinfo("Game Over", "It's a draw!")
 
-        os._exit(0)
-
     def play(self):
+        self.board = np.zeros((3, 3))
         self.create_board()
 
-    def reset(self):
+    def reset_game(self):
         self.board = np.zeros((3, 3))
         self.game_over = False
         self.x_is_human = random.choice([True, False])
+
+    def turn(self):
+        empty_spaces = np.sum(self.board == 0)
+        return self.PLAYER_X if empty_spaces % 2 == 1 else self.PLAYER_O
